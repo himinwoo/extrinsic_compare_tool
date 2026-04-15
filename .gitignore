@@ -10,3 +10,9 @@ dist/
 outputs/
 data/
 .cc_tmp/
+
+# Workspace memory-bank sync links.
+memory-bank
+.agents
+.codex
+.github

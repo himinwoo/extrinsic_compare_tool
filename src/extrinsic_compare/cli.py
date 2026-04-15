@@ -9,6 +9,7 @@ import numpy as np
 
 from .cloudcompare import find_cloudcompare
 from .pcd import inflate_points, load_pcd_ascii, parse_sync_file, write_colored_pcd
+from .preview import write_preview_png
 from .transforms import apply_delta, apply_transform, load_matrix, parse_values, save_matrix, variant_name
 
 
@@ -23,6 +24,14 @@ def add_dataset_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--merge", action="store_true", help="Merge selected frames into one radar/lidar pair.")
     parser.add_argument("--filter-z", type=float, default=None)
     parser.add_argument("--inflate-radius", type=float, default=0.1)
+    parser.add_argument(
+        "--save-images",
+        action="store_true",
+        help="Save quick PNG previews under a preview_images subdirectory.",
+    )
+    parser.add_argument("--image-view", choices=("xy", "xz", "yz"), default="xy", help="Projection plane for PNG previews.")
+    parser.add_argument("--image-size", type=int, default=1200, help="Preview image width/height in pixels.")
+    parser.add_argument("--image-point-size", type=int, default=2, help="Preview point size in pixels.")
 
 
 def cmd_variants(args: argparse.Namespace) -> int:
@@ -62,6 +71,10 @@ def render_dataset(
     merge: bool,
     filter_z: float | None,
     inflate_radius: float,
+    save_images: bool,
+    image_view: str,
+    image_size: int,
+    image_point_size: int,
 ) -> list[Path]:
     sync_path = data_dir / sync_file
     radar_dir = data_dir / radar_dir_name
@@ -73,6 +86,7 @@ def render_dataset(
     print(f"[INFO] sync pairs: {len(pairs)}, selected: {indices}")
 
     output_dir.mkdir(parents=True, exist_ok=True)
+    image_dir = output_dir / "preview_images"
     cc_files = []
     all_radar = []
     all_lidar = []
@@ -109,6 +123,15 @@ def render_dataset(
             write_colored_pcd(radar_out, radar_pts, 255, 50, 50)
             write_colored_pcd(lidar_out, lidar_pts, 50, 255, 50)
             cc_files.extend([radar_out, lidar_out])
+            if save_images:
+                write_preview_png(
+                    image_dir / f"f{fnum:03d}_preview.png",
+                    radar_pts,
+                    lidar_pts,
+                    view=image_view,
+                    size=image_size,
+                    point_size=image_point_size,
+                )
 
     if merge:
         if not all_radar and not all_lidar:
@@ -120,6 +143,15 @@ def render_dataset(
         write_colored_pcd(radar_out, merged_radar, 255, 50, 50)
         write_colored_pcd(lidar_out, merged_lidar, 50, 255, 50)
         cc_files = [radar_out, lidar_out]
+        if save_images:
+            write_preview_png(
+                image_dir / "merged_preview.png",
+                merged_radar,
+                merged_lidar,
+                view=image_view,
+                size=image_size,
+                point_size=image_point_size,
+            )
 
     if not cc_files:
         raise RuntimeError("no valid frame pairs")
@@ -140,8 +172,14 @@ def cmd_view(args: argparse.Namespace) -> int:
         merge=args.merge,
         filter_z=args.filter_z,
         inflate_radius=args.inflate_radius,
+        save_images=args.save_images,
+        image_view=args.image_view,
+        image_size=args.image_size,
+        image_point_size=args.image_point_size,
     )
     print(f"[INFO] wrote {len(cc_files)} PCD files under {args.output_dir}")
+    if args.save_images:
+        print(f"[INFO] wrote PNG previews under {Path(args.output_dir) / 'preview_images'}")
 
     if args.no_launch:
         return 0
@@ -182,6 +220,10 @@ def cmd_compare(args: argparse.Namespace) -> int:
                 merge=args.merge,
                 filter_z=args.filter_z,
                 inflate_radius=args.inflate_radius,
+                save_images=args.save_images,
+                image_view=args.image_view,
+                image_size=args.image_size,
+                image_point_size=args.image_point_size,
             )
             f.write(f"{transform_path.stem}\t{transform_path}\t{out_dir}\n")
 

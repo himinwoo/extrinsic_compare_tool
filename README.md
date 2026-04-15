@@ -51,9 +51,13 @@ ecmp view \
   --start-idx 0 \
   --num-frames 10 \
   --step 50 \
+  --save-images \
   --no-launch \
   --output-dir outputs/single
 ```
+
+`--save-images`를 넣으면 PCD가 생성된 폴더 아래 `preview_images/`에 `f000_preview.png` 같은 top-down PNG가 저장됩니다.
+기본은 `xy` 평면이며, 필요하면 `--image-view xz` 또는 `--image-view yz`로 바꿀 수 있습니다.
 
 후보 폴더 전체 비교용 출력 생성:
 
@@ -68,8 +72,11 @@ ecmp compare \
   --num-frames 10 \
   --step 50 \
   --merge \
+  --save-images \
   --output-dir outputs/compare
 ```
+
+`compare --merge --save-images`를 쓰면 후보별 폴더마다 `preview_images/merged_preview.png`가 생겨서 파일 브라우저에서 바로 훑어보기 좋습니다.
 
 CloudCompare까지 바로 열고 싶으면 `view`에서 `--no-launch`를 빼면 됩니다. `compare`는 후보가 많아질 수 있어서 기본적으로 파일 생성만 합니다.
 
