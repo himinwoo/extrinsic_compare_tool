@@ -35,9 +35,12 @@ ecmp variants \
   --base examples/radar_to_lidar_4x4_ascii.txt \
   --out-dir outputs/variants \
   --yaw=-2,-1,0,1,2 \
-  --pitch=0 \
-  --roll=0
+  --x=-0.2,0,0.2 \
+  --y=-0.2,0,0.2
 ```
+
+지정하지 않은 `--roll`, `--pitch`, `--yaw`, `--x`, `--y`, `--z` 값은 모두 `0`입니다.
+`--x`, `--y`, `--z`는 meter 단위 평행이동 후보입니다. 기존 이름인 `--dx`, `--dy`, `--dz`도 똑같이 사용할 수 있습니다.
 
 단일 extrinsic 시각화 PCD 생성:
 

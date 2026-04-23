@@ -239,12 +239,33 @@ def build_parser() -> argparse.ArgumentParser:
     variants = subparsers.add_parser("variants", help="Generate 4x4 transform variants.")
     variants.add_argument("--base", required=True)
     variants.add_argument("--out-dir", required=True)
-    variants.add_argument("--yaw", nargs="*", default=["-2,-1.5,-1,-0.5,0.5,1,1.5,2"])
-    variants.add_argument("--pitch", nargs="*", default=["0"])
-    variants.add_argument("--roll", nargs="*", default=["0"])
-    variants.add_argument("--dx", nargs="*", default=["0"])
-    variants.add_argument("--dy", nargs="*", default=["0"])
-    variants.add_argument("--dz", nargs="*", default=["0"])
+    variants.add_argument("--yaw", nargs="*", default=["0"], help="Yaw delta in degrees. Default: 0.")
+    variants.add_argument("--pitch", nargs="*", default=["0"], help="Pitch delta in degrees. Default: 0.")
+    variants.add_argument("--roll", nargs="*", default=["0"], help="Roll delta in degrees. Default: 0.")
+    variants.add_argument(
+        "--x",
+        "--dx",
+        dest="dx",
+        nargs="*",
+        default=["0"],
+        help="Translation delta along x in meters. Accepts comma lists, e.g. --x=-0.2,0,0.2.",
+    )
+    variants.add_argument(
+        "--y",
+        "--dy",
+        dest="dy",
+        nargs="*",
+        default=["0"],
+        help="Translation delta along y in meters. Accepts comma lists, e.g. --y=-0.2,0,0.2.",
+    )
+    variants.add_argument(
+        "--z",
+        "--dz",
+        dest="dz",
+        nargs="*",
+        default=["0"],
+        help="Translation delta along z in meters. Accepts comma lists, e.g. --z=-0.1,0,0.1.",
+    )
     variants.add_argument("--prefix", default="radar_to_lidar")
     variants.add_argument("--delta-frame", choices=("lidar", "radar"), default="lidar")
     variants.set_defaults(func=cmd_variants)
