@@ -16,3 +16,8 @@ memory-bank
 .agents
 .codex
 .github
+
+# Local workspace instruction links.
+AGENT.md
+AGENTS.md
+CLAUDE.md

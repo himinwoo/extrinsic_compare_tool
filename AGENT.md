@@ -1,1 +1,0 @@
-/home/himinwoo/calib_ws/extrinsic_compare_tool/AGENTS.md
